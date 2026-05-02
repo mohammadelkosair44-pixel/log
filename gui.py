@@ -5,12 +5,13 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 
-# ---------------------- PDF READING ----------------------
+# PDF Reading part by Abdelrhman Magdi.
+
 def read_pdf(file_path):
     file_path = file_path.strip().strip('"').strip("'")
 
     if not os.path.exists(file_path):
-        print(f"❌ File not found: {file_path}")
+        print(f" File not found: {file_path}")
         return ""
 
     text = ""
@@ -23,19 +24,20 @@ def read_pdf(file_path):
                 try:
                     extracted = page.extract_text()
                     if extracted:
-                        text += extracted + "\n"   # FIX
+                        text += extracted + "\n"   
                 except:
-                    print("⚠️ Skipped a page")
+                    print(" Skipped a page")
                     continue
 
     except Exception as e:
-        print(f"❌ Error reading PDF: {e}")
+        print(f" Error reading PDF: {e}")
         return ""
 
     return text
 
 
-# ---------------------- PARSING ----------------------
+# Parsing part by "sign your name here".
+
 def parse_questions(text):
     questions = []
     blocks = text.split("[LEVEL:")
@@ -75,27 +77,30 @@ def parse_questions(text):
     return questions
 
 
-# ---------------------- RANGE FILTER ----------------------
+# Range filter part by "sign your name here".
+
 def filter_by_range(questions, start, end):
     if start < 1 or end > len(questions) or start > end:
-        print("❌ Invalid range!")
+        print(" Invalid range!")
         return []
     return questions[start-1:end]
 
 
-# ---------------------- SELECTION ----------------------
+# Selection part by Abdelrhman Magdi.
+
 def select_questions(questions, level, num):
     filtered = [q for q in questions if q["level"] == level]
 
     if not filtered:
-        print("❌ No questions found for this level!")
+        print(" No questions found for this level!")
         return []
 
-    num = min(num, len(filtered))  # FIX
+    num = min(num, len(filtered))  
     return random.sample(filtered, num)
 
 
-# ---------------------- PDF CREATION ----------------------
+# PDF Creation part by "your name here".
+
 def create_exam_pdf(questions, filename):
     doc = SimpleDocTemplate(filename, pagesize=letter)
     styles = getSampleStyleSheet()
@@ -132,27 +137,28 @@ def create_answer_pdf(questions, filename):
     doc.build(content)
 
 
-# ---------------------- MAIN ----------------------
+# Main code by "name".
+
 def main():
     print("===== Advanced Exam Generator =====")
 
-    file_path = input("Enter PDF file path: ")
+    file_path = input(" Enter PDF file path: ")
     pdf_text = read_pdf(file_path)
 
     if not pdf_text.strip():
-        print("❌ Empty or unreadable PDF!")
+        print(" Empty or unreadable PDF! ")
         return
 
     questions = parse_questions(pdf_text)
 
     if not questions:
-        print("❌ No valid questions found!")
+        print(" No valid questions found! ")
         return
 
-    print(f"✅ Total questions: {len(questions)}")
+    print(f" Total questions: {len(questions)}")
 
-    # RANGE
-    use_range = input("Use range? (y/n): ").lower()
+    # Range
+    use_range = input(" Use range? (y/n): ").lower()
 
     if use_range == 'y':
         try:
@@ -164,10 +170,10 @@ def main():
                 return
 
         except:
-            print("❌ Invalid input!")
+            print(" Invalid input! ")
             return
 
-    # LEVELS
+    # Levels
     levels = sorted(set(q["level"] for q in questions))
 
     print("\nAvailable Levels:")
@@ -177,13 +183,13 @@ def main():
     level = input("\nEnter level: ").strip().lower()
 
     if level not in levels:
-        print("❌ Invalid level!")
+        print(" Invalid level! ")
         return
 
     try:
         num = int(input("Number of questions: "))
     except:
-        print("❌ Invalid number!")
+        print(" Invalid number! ")
         return
 
     selected = select_questions(questions, level, num)
@@ -194,7 +200,7 @@ def main():
     create_exam_pdf(selected, "exam.pdf")
     create_answer_pdf(selected, "answers.pdf")
 
-    print("\n🎉 Done! Files created: exam.pdf & answers.pdf")
+    print("\n Done! Files created: exam.pdf & answers.pdf ")
 
 
 if __name__ == "__main__":
